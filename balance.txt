@@ -1,0 +1,5 @@
+1001,4200.0,current_account
+1002,218000.0,savings_account
+1003,402000.0,current_account
+1004,20000.0,current_account
+1005,10000.0,savings_account

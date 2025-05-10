@@ -34,51 +34,52 @@ def get_accountnumber():
 
 def check_username():
     global Login_User_id
+
     while True:
-        user_name = input('Enter your user_name:')
+        user_name = input('Enter your username: ')
         user_found = False
+
         try:
             with open('customer.txt', 'r') as file:
-                
                 for line in file:
                     details = line.strip().split(',')
                     if len(details) >= 5:
                         userid = details[2]
                         username = details[3]
                         password = details[4]
+
                         if user_name == username:
                             user_found = True
-                            for attempt in range (3):
-                                user_password = input('Enter your user_password:')
+                            for attempt in range(3):
+                                user_password = input('Enter your password: ')
                                 if user_password == password:
                                     print('Access Successful!')
                                     Login_User_id = userid
                                     return
-
-                                print(f'Incorrect password. Attempts left: {2 - attempt}')
+                                else:
+                                    print(f'Incorrect password. Attempts left: {2 - attempt}')
                             print('Access Denied! Too many failed attempts.')
-                            login()
-                            break
-                    break                            
+                            exit()
+                            return  
             if not user_found:
-                print('Customer not found.')
+                print('\nCustomer not found.')
                 print('1. Try again')
                 print('2. Create customer')
-                print('3. Exit ')
-                choice = input('Enter number 1 or 3 :')
+                print('3. Exit')
+                choice = input('Enter your choice: ')
                 if choice == '1':
                     continue
                 elif choice == '2':
                     create_customer()
                 elif choice == '3':
                     print('Exiting...')
-                    login()
                     return
+                else:
+                    print('Invalid input. Please enter 1, 2, or 3.')
+                    continue
         except FileNotFoundError:
             print("Customer file not found.")
             return
-        
-    
 
 #print(get_accountnumber())
 
@@ -213,6 +214,7 @@ def action_withdrow():
             amount = float(input('Enter the withdrawl amount: '))
             if amount <= 0:
                 print('Withdrawl amount must be greater than 0.')
+                continue
 
             else:
                 #break
@@ -227,34 +229,39 @@ def action_withdrow():
                         bal_user_id = datas[0]
                         balance = float(datas[1])
                         statement = datas[2]
-                        if amount > balance:
-                            print('Invalid Withdrawal! Your withdrawl amount is greater than your balance.')
-                            #return
-                        else:
-                            if Login_User_id == bal_user_id:
+
+                        if Login_User_id == bal_user_id:
+                            if amount > balance:
+                                print('Invalid Withdrawal! Your withdrawl amount is greater than your balance.')
+                                continue
+                            else:
                                 balance -= amount
                                 lines[i] = f'{bal_user_id},{balance},{statement}\n'
                                 updated = True
                                 print('Withdrow successful!')
                                 break
-                break
-        except ValueError:
-            print('Invalid input! Please enter a valid number for the withdrow.')
+                    #break    
+            
 
     # If the user was found, write the updated data back to balance.txt
-    if updated:
-        with open('balance.txt', 'w') as ffile:
-            ffile.writelines(lines)
-        
-        # Write the transaction to the transaction file
-        from datetime import datetime
-        with open('transactions.txt', 'a') as file:
-            date_time = datetime.now().strftime('%d-%m-%Y %A %I.%M %p')
-            file.write(f'{Login_User_id},{date_time},{action},{amount}\n')
-    else:
-        print('User not found in balance file.')
+            if updated:
+                with open('balance.txt', 'w') as ffile:
+                    ffile.writelines(lines)
+                
+                # Write the transaction to the transaction file
+                from datetime import datetime
+                with open('transactions.txt', 'a') as file:
+                    date_time = datetime.now().strftime('%d-%m-%Y %A %I.%M %p')
+                    file.write(f'{Login_User_id},{date_time},{action},{amount}\n')
+            else:
+                #print('User not found in balance file.')
+                break
 
-    
+
+        except ValueError:
+         print('Invalid input! Please enter a valid number for the withdrow.')
+
+        
 
 def view_balance():
     global Login_User_id
@@ -393,7 +400,7 @@ def login():
             print('Exiting...')
             exit()
             break
-        break
+        
 login()
                     
 
